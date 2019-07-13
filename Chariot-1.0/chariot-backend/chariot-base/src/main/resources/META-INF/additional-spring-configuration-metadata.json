@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "app.domain",
+    "type": "java.lang.String",
+    "description": "域名"
+  },
+  {
+    "name": "app.wap.domain",
+    "type": "java.lang.String",
+    "description": "wap域名"
+  },
+  {
+    "name": "sys.proxy.ip",
+    "type": "java.lang.String",
+    "description": "代理ip'"
+  },
+  {
+    "name": "upc.root",
+    "type": "java.lang.String",
+    "description": "upc域名"
+  },
+  {
+    "name": "upc.app-name",
+    "type": "java.lang.String",
+    "description": "upc应用名"
+  },
+  {
+    "name": "sys.proxy.port",
+    "type": "java.lang.String",
+    "description": "应用代理端口"
+  }
+]}

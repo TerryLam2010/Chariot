@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+
+<head>
+    <meta charset="UTF-8">
+    <title>系统角色列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <script th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">系统管理</a>
+        <a href="">角色管理</a>
+        <a>
+            <cite>角色管理列表</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <form class="layui-form layui-col-space5">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="name" placeholder="请输入角色名" autocomplete="off" class="layui-input" id="name"></div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit="" lay-filter="vaeform">搜索</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-card-header" >
+      <!--              <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>-->
+                    <button class="layui-btn" onclick="xadmin.open('添加角色','/admin/role/add',600,400)" shiro:hasPermission="roleAdd"><i class="layui-icon" ></i>添加</button>
+                </div>
+                <div class="layui-card-body ">
+                    <table class="layui-table" lay-data="{url:'/admin/role/list',height:'full-160',page:true,id:'role'}" lay-filter="role">
+                        <thead>
+                        <tr>
+                            <th lay-data="{type:'checkbox'}">ID</th>
+                            <th lay-data="{field:'id',  sort: true}">ID</th>
+                            <th lay-data="{field:'name',sort: true}">角色名称</th>
+                            <th lay-data="{field:'roleKey',}">角色Key</th>
+                            <th lay-data="{field:'status',templet: '#switchStatus'}">状态</th>
+                            <th lay-data="{field:'createTime',}">创建时间</th>
+                            <th lay-data="{field:'updateTime',  sort: true, }">更新时间</th>
+                            <th lay-data="{align:'center', toolbar: '#barDemo'}"></th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <script type="text/html" id="barDemo">
+                      <!--  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>-->
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-xs" lay-event="resource">权限配置</a>
+                       <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/html" id="switchStatus">
+    <!-- 这里的checked的状态只是演示 -->
+    <input  type = "checkbox" name = "status"  value = "{{d.id}}" lay-skin = "switch" lay-text = "可用|不可用" lay-filter="switchStatus"   {{ d.status == 1 ? 'checked' : '' }} >
+</script>
+<script>layui.use('laydate',
+    function() {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+
+    });</script>
+<script>
+    layui.use(['table','form'],
+    function() {
+        var table = layui.table,form = layui.form;
+        //监听单元格编辑
+        table.on('edit(role)',
+            function(obj) {
+                var value = obj.value //得到修改后的值
+                    ,
+                    data = obj.data //得到所在行所有键值
+                    ,
+                    field = obj.field; //得到字段
+                layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+            });
+
+        //头工具栏事件
+        table.on('toolbar(role)',
+            function(obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'getCheckData':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选': '未全选');
+                        break;
+                };
+            });
+
+        //监听工具条
+        table.on('tool(role)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                layer.msg('ID：'+ data.id + ' 的查看操作');
+            } else if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                   // obj.del();
+                    let id = obj.data.id;
+                    $.ajax({
+                        url:'/admin/role/delete/'+id,
+                        data:data,
+                        dataType:'json',
+                        type:'post',
+                        success:function (data) {
+                            layer.close(index);
+                            layui.table.reload('role',{page: {curr: 1}});
+                        },
+                        error:function (err) {
+                            alert(err);
+                        }
+                    });
+                });
+            } else if(obj.event === 'edit'){
+                var index = layer.open({
+                    type: 2,
+                    area: [500+'px', 400 +'px'],
+                    fix: false, //不固定
+                    maxmin: true,
+                    shadeClose: true,
+                    shade:0.4,
+                    title: '编辑',
+                    content: '/admin/role/edit/'+data.id
+                });
+               // layer.alert('编辑行：<br>'+ JSON.stringify(data))
+
+            }
+            else if(obj.event === 'resource'){
+                var index = layer.open({
+                    type: 2,
+                    area: [500+'px', 400 +'px'],
+                    fix: false, //不固定
+                    maxmin: true,
+                    shadeClose: true,
+                    shade:0.4,
+                    title: '角色权限配置',
+                    content: '/admin/role/resourceByRole/'+data.id
+                });
+                // layer.alert('编辑行：<br>'+ JSON.stringify(data))
+
+            }
+        });
+
+        form.on('submit(vaeform)', function(data){
+            console.log(data.field.name);
+            if(data.field) {
+                table.reload('role',{where:data.field,page: {curr: 1}});
+            }
+            return false;
+        });
+
+        //监听锁定状态操作
+        form.on('switch(switchStatus)', function(obj){
+            var data = {'status':obj.elem.checked};
+            $.ajax({
+                url:'/admin/role/updateStatus/'+this.value,
+                data:data,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    if(data.code == 200){
+                        layer.msg('修改状态成功!',{icon:1,time:1000});
+                        table.reload('role');
+                    }else{
+                        layer.alert(data.msg,{icon:2,time:1000});
+                    }
+                },
+                error:function (err) {
+                    layer.alert(err,{icon:2,time:1000});
+                }
+            });
+        });
+    });
+</script>
+
+</html>

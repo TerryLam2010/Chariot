@@ -1,0 +1,65 @@
+server:
+  port: 9051                                               #端口
+spring:
+  datasource:                                               #数据源配置
+    url: jdbc:mysql://127.0.0.1:3306/chariot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: root
+    password: 123456
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jackson:
+    default-property-inclusion: NON_NULL                    #接口字段为空忽略
+  thymeleaf:
+    cache: false                                            #开发时务必为false
+    enabled: true
+  application:
+    name: chariot-admin                                          #为spring应用命名
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+    otherCacheName:
+      type: xxx
+      keyConverter: yyy
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: 127.0.0.1
+      port: 6379
+#mybatis
+mybatis:
+  type-aliases-package: cn.terry.chariot.base.entity
+  mapperLocations: classpath:mapper/**/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+################## 应用配置  ###################
+app:
+  domain:                                                   #pc端域名
+  wap:
+    domain:                                                 #wap端域名
+sys:                                                        #应用代理
+  proxy:
+    ip: 192.168.11.254
+    port: 8080
+
