@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 
-
+import cn.terrylam.chariot.base.dao.system.ResourceDao;
+import cn.terrylam.framework.util.SpringCtxUtils;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import tk.mybatis.mapper.annotation.KeySql;
@@ -208,13 +209,17 @@ public class Resource implements Serializable {
 
 	@JsonIgnore
 	public Resource getParent() {
-		//TODO 查询
-		//return GeliUtils.getDao().find(Resource.class, parentId);
-		return null;
+		return SpringCtxUtils.getBean(ResourceDao.class).selectByPrimaryKey(parentId);
 	}
 
 	public List<Resource> getChildResourses() {
-		return childResourses;
+		try {
+			if(SpringCtxUtils.getBean(ResourceDao.class)!=null){
+				return SpringCtxUtils.getBean(ResourceDao.class).getResourceByParentId(id);
+			}
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 	public void setChildResourses(List<Resource> childResourses) {

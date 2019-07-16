@@ -91,7 +91,6 @@ public class ResourceServiceImpl extends BaseServiceImpl<ResourceDao, Resource> 
 
 	@Override
 	public List<Resource> getAllResource(){
-		//return baseDao.getAllResourceTree();
 		List<Resource> resources = baseDao.getByType(0);
 		for (Resource resource : resources) {
 			resource.setChildResourses(baseDao.getResourceByParentId(resource.getId()));

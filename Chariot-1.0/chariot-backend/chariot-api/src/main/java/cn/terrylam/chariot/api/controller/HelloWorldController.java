@@ -1,6 +1,5 @@
 package cn.terrylam.chariot.api.controller;
 
-import cn.terrylam.chariot.api.service.TestService;
 import cn.terrylam.framework.enums.ResponseCodeEnum;
 import cn.terrylam.framework.util.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloWorldController {
 	
-	@Autowired
-	private TestService testService;
+	/*@Autowired
+	private TestService testService;*/
 
 	@GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseResult<String> helloworld() {
-		int num = testService.num();
+		/*int num = testService.num();*/
 		return ResponseResult.build(ResponseCodeEnum.SUCCESS, ResponseCodeEnum.SUCCESS.getDesc(), "HelloWorld!");
 	}
 }

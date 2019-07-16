@@ -8,3 +8,6 @@
 模板使用ThymeLeaf
 
 打包后可分离出jar,lib,config 减轻以后更新的重量。
+
+
+使用了JetCache，但是把源码拿出来修改了。在base包下

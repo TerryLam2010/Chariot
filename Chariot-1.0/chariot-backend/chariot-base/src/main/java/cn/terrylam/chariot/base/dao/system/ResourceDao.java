@@ -19,4 +19,5 @@ public interface ResourceDao extends BaseDao<Resource> {
 	public List<Resource> getByType(Integer type);
 
 	public List<Resource> getResourceByParentId(Long resourceId);
+
 }

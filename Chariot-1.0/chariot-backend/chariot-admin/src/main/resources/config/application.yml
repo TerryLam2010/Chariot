@@ -1,6 +1,9 @@
 server:
   port: 9051                                               #端口
 spring:
+  devtools:
+    restart:
+      enabled: false
   datasource:                                               #数据源配置
     url: jdbc:mysql://127.0.0.1:3306/chariot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=CTT&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
@@ -46,6 +49,19 @@ spring:
         url-pattern: /*
         # 忽略过滤格式
         exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/chariot-admin-druid/*"
+  redis:
+    database: 2
+    host: 127.0.0.1
+    port: 6379
+    timeout: 60s  # 数据库连接超时时间，2.0 中该参数的类型为Duration，这里在配置的时候需要指明单位
+    #   cluster:
+    #     nodes: 192.168.53.53:8010,192.168.53.53:8011,192.168.53.53:8012,192.168.53.53:8013,192.168.53.53:8014,192.168.53.53:8015
+    lettuce:
+      pool:
+        max-active:  100 # 连接池最大连接数（使用负值表示没有限制）
+        max-idle: 100 # 连接池中的最大空闲连接
+        min-idle: 50 # 连接池中的最小空闲连接
+        max-wait: 6000 # 连接池最大阻塞等待时间（使用负值表示没有限制）
   jackson:
     default-property-inclusion: NON_NULL                    #接口字段为空忽略
   thymeleaf:
@@ -62,28 +78,7 @@ management:
     health:
       show-details: always
 
-jetcache:
-  statIntervalMinutes: 15
-  areaInCacheName: false
-  local:
-    default:
-      type: linkedhashmap
-      keyConvertor: fastjson
-    otherCacheName:
-      type: xxx
-      keyConverter: yyy
-  remote:
-    default:
-      type: redis
-      keyConvertor: fastjson
-      valueEncoder: java
-      valueDecoder: java
-      poolConfig:
-        minIdle: 5
-        maxIdle: 20
-        maxTotal: 50
-      host: 127.0.0.1
-      port: 6379
+
 #mybatis
 mybatis:
   type-aliases-package: cn.terry.chariot.base.entity
