@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 /**
  * 错误代码定义
  *
- * @author liaoqiqi
  * @version 2013-12-2
  */
 public enum ResultStatus  {

@@ -20,4 +20,5 @@ public interface ResourceDao extends BaseDao<Resource> {
 
 	public List<Resource> getResourceByParentId(Long resourceId);
 
+	public List<Resource> findAll();
 }

@@ -10,13 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloWorldController {
-	
-	/*@Autowired
-	private TestService testService;*/
 
 	@GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseResult<String> helloworld() {
-		/*int num = testService.num();*/
 		return ResponseResult.build(ResponseCodeEnum.SUCCESS, ResponseCodeEnum.SUCCESS.getDesc(), "HelloWorld!");
 	}
 }

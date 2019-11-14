@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,8 @@ public class ShiroConfig {
     }
 
 	@Bean(name = "shiroFilter")
-	//@DependsOn("securityManager")
-	//@ConditionalOnMissingBean
+	@DependsOn("securityManager")
+	@ConditionalOnMissingBean
 	public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultSecurityManager securityManager, Realm realm) {
 
 		securityManager.setRealm(realm);
@@ -63,29 +64,40 @@ public class ShiroConfig {
 		shiroFilter.setLoginUrl("/admin/login");
 		shiroFilter.setSuccessUrl("/admin/index");
 		shiroFilter.setUnauthorizedUrl("/previlige/no");
-		/*Map<String, Filter> filters = new LinkedHashMap<String, Filter>();
-
-		shiroFilter.setFilters(filters);*/
+		Map<String, Filter> filters = new LinkedHashMap<String, Filter>();
+		filters.put("anyPerms", new PermsAuthorizationFilter());
+		shiroFilter.setFilters(filters);
 		setUrlFilter(shiroFilter);
 		return shiroFilter;
 	}
 
 	private void setUrlFilter(ShiroFilterFactoryBean shiroFilterFactoryBean) {
-		List<Resource> resources = resourceDao.selectAll();
+		List<Resource> resources = resourceDao.findAll();
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
-		filterChainDefinitionMap.put("/assets/**", "anon");
 		filterChainDefinitionMap.put("/admin/login", "anon");
+		filterChainDefinitionMap.put("/admin/session", "anon");
 		filterChainDefinitionMap.put("/static/**", "anon");
-		filterChainDefinitionMap.put("/admin/index", "authc");
+
+
+		//权限范围过滤器从小写到大
+		Map<String,String> urls = new LinkedHashMap<>();
 		for (Resource resource : resources) {
-			if (StringUtils.isNotBlank(resource.getSourceUrl())
-					&& StringUtils.isNotBlank(resource.getSourceKey())) {
-				filterChainDefinitionMap.put(resource.getSourceUrl(), "perms[" + resource.getSourceKey() + "]");
+
+			if (StringUtils.isNotBlank(resource.getSourceUrl()) && StringUtils.isNotBlank(resource.getSourceKey())) {
+				if(urls.containsKey(resource.getSourceUrl())){
+					String value = urls.get(resource.getSourceUrl()) + "," + resource.getSourceKey();
+					urls.put(resource.getSourceUrl(),value);
+				}else{
+					urls.put(resource.getSourceUrl(),resource.getSourceKey());
+				}
 			}
-
 		}
-		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+		urls.forEach((key,value)->{
+			filterChainDefinitionMap.put(key, "anyPerms[" + value + "]");
+		});
 
+		filterChainDefinitionMap.put("/admin/**", "authc");
+		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
 	}
 

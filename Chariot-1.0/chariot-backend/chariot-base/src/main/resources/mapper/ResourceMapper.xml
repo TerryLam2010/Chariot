@@ -25,4 +25,8 @@
              parent_id = #{resourceId}
         </where>
     </select>
+
+    <select id="findAll" resultType="cn.terrylam.chariot.base.entity.system.Resource">
+        select * from tb_resource order by parent_id,id,sort
+    </select>
 </mapper>

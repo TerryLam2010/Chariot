@@ -5,7 +5,6 @@ import cn.terrylam.chariot.admin.controller.system.form.ResourcePageForm;
 import java.util.List;
 
 import cn.terrylam.chariot.admin.vo.ZtreeView;
-import cn.terrylam.chariot.base.cache.anno.Cached;
 import cn.terrylam.chariot.base.entity.system.Resource;
 import cn.terrylam.chariot.base.service.BaseService;
 import cn.terrylam.framework.util.Pager;
@@ -29,7 +28,6 @@ public interface ResourceService extends BaseService<Resource> {
 	 */
 	public long createOrUpdate(Resource resource) ;
 
-	@Cached(name="AllResource.",expire = 60)
 	public List<Resource> getAllResource();
 
 	public void modifyRoleResource(Long roleId, String resourceIdsStr);
