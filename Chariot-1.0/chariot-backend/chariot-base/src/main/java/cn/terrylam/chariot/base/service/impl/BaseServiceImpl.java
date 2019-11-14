@@ -1,5 +1,6 @@
 package cn.terrylam.chariot.base.service.impl;
 
+import cn.terrylam.chariot.base.cache.CommonCache;
 import cn.terrylam.framework.util.Pager;
 import cn.terrylam.chariot.base.dao.BaseDao;
 import cn.terrylam.chariot.base.service.BaseService;
@@ -17,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class BaseServiceImpl<M extends BaseDao<T>, T> implements BaseService<T> {
@@ -27,12 +29,12 @@ public class BaseServiceImpl<M extends BaseDao<T>, T> implements BaseService<T> 
     @Autowired
     private RedisTemplate<String,T> redisTemplate;
 
-
+    @Autowired
+    private CommonCache<T> commonCache;
 
     @Override
     public Integer insert(T entity) {
         return baseDao.insertUseGeneratedKeys(entity);
-       // return baseDao.insert(entity);
     }
 
     @Override
@@ -58,15 +60,10 @@ public class BaseServiceImpl<M extends BaseDao<T>, T> implements BaseService<T> 
 
     @Override
     public T findById(Serializable id) {
-        //Weekend<T> weekend = new Weekend<T>( (Class < T > ) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[ 0 ]);
-        //Example.Criteria criteria = weekend.createCriteria();
         Class<T> actualTypeArgument = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-        T cacheObj = redisTemplate.opsForValue().get(actualTypeArgument.getSimpleName()+"_"+id);
-        if(cacheObj==null){
-            cacheObj = baseDao.selectByPrimaryKey(id);
-            redisTemplate.opsForValue().set(actualTypeArgument.getSimpleName()+"_"+id,cacheObj);
-        }
-        return cacheObj;
+        return commonCache.getDataByCache((key)->{
+            return baseDao.selectByPrimaryKey(id);
+        },actualTypeArgument.getSimpleName()+"_"+id,60, TimeUnit.MINUTES);
     }
 
     @Override
